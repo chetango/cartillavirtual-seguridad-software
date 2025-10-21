@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilar Seguro - Cartilla Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero .author-info {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 3rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .cta-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Pipeline Visualization */
+        .pipeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .pipeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: -50px;
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+            z-index: 1;
+        }
+
+        .pipeline-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .pipeline-step h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        /* Checklist */
+        .checklist {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-item:hover {
+            background: #f8fafc;
+            padding-left: 1rem;
+            border-radius: 10px;
+        }
+
+        .checklist-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer h3 {
+            margin-bottom: 1rem;
+        }
+
+        .footer p {
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .pipeline {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .pipeline-step:not(:last-child)::after {
+                display: none;
+            }
+        }
+
+        /* Scroll Progress */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">🔒 Compilar Seguro</div>
+                <ul class="nav-links">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#contenido">Contenido</a></li>
+                    <li><a href="#pipeline">Pipeline</a></li>
+                    <li><a href="#checklist">Checklist</a></li>
+                    <li><a href="#referencias">Referencias</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <h1>Compilar Seguro</h1>
+            <p class="subtitle">Del código a un pipeline con controles que sí bloquean</p>
+            <div class="author-info">
+                <p><strong>Jorge Andrés Padilla Mayo</strong></p>
+                <p>Seguridad en el Desarrollo de Software • UNIMINUTO</p>
+                <p>Prof. Juan Carlos Valencia • Octubre 2025</p>
+            </div>
+            <a href="#contenido" class="cta-button">
+                <i class="fas fa-arrow-down"></i> Explorar Cartilla
+            </a>
+        </div>
+    </section>
+
+    <!-- Introducción -->
+    <section id="introduccion" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Introducción</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-bullseye"></i></div>
+                    <h3>Propósito</h3>
+                    <p>Guía práctica para integrar la seguridad en el proceso de construcción (build) del software, definiendo políticas claras y controles automáticos que detengan artefactos inseguros.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                    <h3>Dirigida a</h3>
+                    <p>Estudiantes y equipos de desarrollo que buscan aplicar estándares de desarrollo seguro con foco en compilación, dependencias y pruebas estáticas/dinámicas.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Importancia</h3>
+                    <p>Los ataques a la cadena de suministro son hoy una vía principal de compromiso. La automatización con controles obligatorios reduce la variabilidad humana y eleva el nivel de madurez de seguridad.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contenido Principal -->
+    <section id="contenido" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Fundamentos de Seguridad</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-code"></i></div>
+                    <h3>Definición Formal del Build</h3>
+                    <p>Documenta una especificación que incluya entradas controladas, pasos y responsables, políticas de aceptación, trazabilidad y firmas de artefactos.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-robot"></i></div>
+                    <h3>Automatización CI/CD</h3>
+                    <p>Pipelines inmutables, reproducibles con runners endurecidos. Versiones fijadas, aislamiento de runners y rotación de credenciales.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-ban"></i></div>
+                    <h3>Controles que Bloquean</h3>
+                    <p>Políticas que "rompen" el build: cero hallazgos críticos SAST, dependencias sin CVE críticos, cobertura mínima de pruebas.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-cubes"></i></div>
+                    <h3>Gestión de Dependencias</h3>
+                    <p>SBOM generado, inventario vivo de dependencias, política de librerías permitidas/vetadas y actualización controlada.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-search"></i></div>
+                    <h3>Análisis SAST</h3>
+                    <p>Análisis estático temprano en pull requests, gestión de falsos positivos con baseline y integración automática con issues.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-bug"></i></div>
+                    <h3>Análisis DAST</h3>
+                    <p>Pruebas dinámicas sobre staging con datos sintéticos, incluyendo pruebas de autenticación y rutas críticas del sistema.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline Visualization -->
+    <section id="pipeline" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Pipeline Seguro - Academia de Tango</h2>
+                <p>Ejemplo práctico de implementación</p>
+            </div>
+            <div class="pipeline">
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-download"></i></div>
+                    <h4>Checkout & Setup</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h4>SCA + Secrets</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-hammer"></i></div>
+                    <h4>Build + SBOM</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-vial"></i></div>
+                    <h4>Tests + Coverage</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-search"></i></div>
+                    <h4>SAST Analysis</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-bug"></i></div>
+                    <h4>DAST Staging</h4>
+                </div>
+                <div class="pipeline-step">
+                    <div class="pipeline-icon"><i class="fas fa-signature"></i></div>
+                    <h4>Sign & Deploy</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preguntas Orientadoras -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Preguntas Orientadoras</h2>
+            </div>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-question-circle"></i></div>
+                    <h3>¿Por qué automatizar el build?</h3>
+                    <p>Reduce la variabilidad humana, genera evidencia reproducible, aplica controles de forma consistente y dificulta ataques a la cadena de suministro. Asegurar las herramientas cierra vectores de abuso del propio pipeline.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>¿Impacto de controles obligatorios?</h3>
+                    <p>Eleva el estándar de calidad: no salen artefactos inseguros. Los equipos corrigen antes, el riesgo operativo disminuye y se mejora la trazabilidad. "Romper" el build convierte la seguridad en una política técnica ejecutable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checklist -->
+    <section id="checklist" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Checklist de Verificación</h2>
+                <p>Lista de comprobación para código seguro</p>
+            </div>
+            <div class="checklist">
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿El pipeline define umbral para SAST/SCA y bloquea hallazgos críticos/altos?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Se genera SBOM en cada release y se almacena con la provenance?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Las dependencias están fijadas y sin licencias incompatibles?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Se escanean secretos en push/PR?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Cobertura de pruebas ≥ 70% y pruebas para módulos críticos?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿El runner y credenciales siguen mínimo privilegio y rotación periódica?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Se ejecuta DAST sobre staging para rutas sensibles?</p>
+                </div>
+                <div class="checklist-item">
+                    <div class="checklist-icon"><i class="fas fa-check"></i></div>
+                    <p>¿Quedó documentada la especificación de build con entradas, pasos y políticas?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusiones -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Conclusiones</h2>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+                <h3>Reflexión Final</h3>
+                <p>Integrar seguridad en la compilación convierte las políticas en controles verificables. La automatización, los gates que bloquean y la gestión rigurosa de dependencias reducen el riesgo y elevan la calidad del software. Con el soporte de modelos de madurez como OWASP SAMM y prácticas de SAST/DAST, se logra un proceso trazable, repetible y realmente seguro.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Referencias -->
+    <section id="referencias" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Referencias Bibliográficas</h2>
+            </div>
+            <div class="card">
+                <div class="card-icon"><i class="fas fa-book"></i></div>
+                <h3>Fuentes Consultadas</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--primary);">
+                        Ortega, J. (2018). <em>Seguridad en aplicaciones Web Java</em> (pp. 62–94). RA-MA Editorial.
+                    </li>
+                    <li style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--primary);">
+                        OWASP Foundation. (s. f.). <em>OWASP Software Assurance Maturity Model (SAMM): Model overview</em>. Recuperado de https://owaspsamm.org
+                    </li>
+                    <li style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--primary);">
+                        Conklin, L. (s. f.). <em>Threat Modeling Process</em>. OWASP. Recuperado de https://owasp.org/www-community/Threat_Modeling
+                    </li>
+                    <li style="margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid var(--primary);">
+                        National Institute of Standards and Technology. (2022). <em>Secure Software Development Framework (SSDF)</em>, SP 800-218.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h3>Cartilla Digital - Desarrollo Seguro de Software</h3>
+            <p>Jorge Andrés Padilla Mayo</p>
+            <p>Universidad UNIMINUTO • 2025</p>
+            <p>Curso: Seguridad en el Desarrollo de Software</p>
+            <p>Docente: Juan Carlos Valencia</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector('.progress-bar').style.width = scrolled + '%';
+        });
+
+        // Nav background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(255,255,255,0.98)';
+            } else {
+                nav.style.background = 'rgba(255,255,255,0.95)';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+Portada
+
+¿Cómo construir un software seguro?
+Compilar seguro: del código a un pipeline con controles que sí bloquean
+Elaborado por: Jorge Andrés Padilla Mayo
+Curso: Seguridad en el Desarrollo de Software
+Docente: Juan Carlos Valencia
+Universidad: UNIMINUTO
+Fecha: 20 de octubre de 2025
+
+Sugerencia visual: ilustración de una línea de ensamblaje (pipeline) con “checkpoints” de seguridad (candados, escudos) y cajas etiquetadas como “SAST”, “SCA”, “DAST”, “SBOM”.
+
+Página legal / Contraportada
+
+Cartilla académica para fines educativos en el curso Seguridad en el Desarrollo de Software – UNIMINUTO.
+Autor: Jorge Andrés Padilla Mayo.
+Se citan fuentes y se respetan derechos de autor conforme a normas APA 7.
+Contacto académico: (opcional).
+
+Título (página interna)
+
+Compilar seguro: prácticas y controles para un desarrollo confiable
+
+Tabla de contenido
+
+Introducción
+
+Fundamentos: seguridad y proceso de compilación
+
+Definir formalmente el proceso de compilación
+
+Automatización y aseguramiento de herramientas (CI/CD)
+
+Controles obligatorios que bloquean el build
+
+Evaluación y gobierno de dependencias (SCA, SBOM)
+
+Análisis estático (SAST) y dinámico (DAST)
+
+Caso práctico: App Academia de Tango
+
+Respuestas a las preguntas orientadoras
+
+Checklist de verificación de código seguro (metacognición)
+
+Recomendaciones finales y errores comunes
+
+Conclusiones
+
+Referencias (APA)
+
+1. Introducción
+
+Propósito. Esta cartilla ofrece una guía práctica para integrar la seguridad en el proceso de construcción (build) del software, definiendo políticas claras y controles automáticos que detengan artefactos inseguros.
+A quién va dirigida. Estudiantes y equipos de desarrollo que buscan aplicar estándares de desarrollo seguro con foco en compilación, dependencias y pruebas estáticas/dinámicas.
+Contenido. Se abordan: definición formal del build, automatización y aseguramiento de la cadena de herramientas, controles obligatorios (que “rompen” el build), gestión de dependencias (SCA/SBOM) y la integración de SAST/DAST en el pipeline, apoyado en OWASP SAMM y bibliografía base.
+Importancia. Los ataques a la cadena de suministro (supply chain) y a dependencias son hoy una vía principal de compromiso. La automatización con controles obligatorios reduce la variabilidad humana, hace trazable la evidencia y eleva el nivel de madurez de seguridad del proceso.
+
+2. Fundamentos: seguridad y proceso de compilación
+
+Seguridad desde el diseño: aplicar principios de mínimo privilegio, fail-fast, defensa en profundidad y validación estricta de entradas.
+
+Seguridad en el build: el build no es solo compilar; es producir artefactos confiables bajo políticas verificables (versionado, firmas, escaneo, pruebas).
+
+Modelo de madurez (OWASP SAMM): ayuda a priorizar prácticas por dominios (Gobernanza, Diseño, Implementación, Verificación y Operaciones) y a medir progreso de forma incremental.
+
+3. Definir formalmente el proceso de compilación
+
+Documenta una especificación de build que incluya:
+
+Entradas controladas: repositorio, rama, versión, variables, secretos (en vaults).
+
+Pasos y responsables: etapas, herramientas, parámetros, salida esperada por etapa.
+
+Políticas de aceptación: qué pruebas y umbrales debe cumplir cada artefacto.
+
+Trazabilidad: registro de cada ejecución (logs firmados, metadatos de quién/cuándo/cómo).
+
+Firmas y huellas: firma de artefactos y publicación de metadatos (ej. provenance).
+
+Sugerencia visual: diagrama de flujo con etapas y “gates” de decisión (aprobado/bloqueado).
+
+4. Automatización y aseguramiento de herramientas (CI/CD)
+
+CI/CD como control de seguridad: pipelines inmutables, reproducibles y con runners endurecidos.
+
+Aseguramiento de herramientas:
+
+Versiones fijadas (pinning), hashes verificados y actualizaciones controladas.
+
+Aislamiento de runners, principio de mínimo privilegio y rotación de credenciales.
+
+Escaneo de secretos en push y pull requests.
+
+Artefactos confiables: repositorio de artefactos (registry) con escaneo y firma.
+
+Evidencia automática: guardar reportes (SAST/SCA/coverage) como adjuntos del pipeline.
+
+5. Controles obligatorios que bloquean el build
+
+Define “políticas que rompen” cuando no se cumplan umbrales:
+
+SAST: cero hallazgos críticos/altos; medios con baseline y fecha de corrección.
+
+SCA (dependencias): ninguna dependencia con CVE crítico/alto sin mitigación; versiones fijadas.
+
+Pruebas unitarias: cobertura mínima (p. ej., ≥ 70%) y tests obligatorios para módulos críticos.
+
+Linting/format: sin errores bloqueantes; estilo consistente para reducir code smell.
+
+Secret scanning: build falla si hay credenciales, tokens o llaves embebidas.
+
+SBOM generado: obligatorio por cada release.
+
+6. Evaluación y gobierno de dependencias (SCA, SBOM)
+
+Inventario vivo (SBOM): lista firmada de dependencias (directas/transitivas) por versión.
+
+Política de uso de librerías: listas de permitidas/vetadas y revisión de licencias.
+
+Actualización controlada: parches de seguridad priorizados por severidad (CVSS) y criticidad.
+
+Mirroring: preferir proxies o repos internos para evitar descargas desde fuentes no confiables.
+
+7. Análisis estático (SAST) y dinámico (DAST)
+
+SAST temprano: en pull requests y en cada commit a ramas protegidas.
+
+DAST por entorno: ejecutarlo sobre staging con datos sintéticos; incluir pruebas de autenticarión y rutas críticas.
+
+Falsos positivos: gestionar con baseline y justificaciones auditables; no ignorar sin fecha límite.
+
+Integración con issues: crear tareas automáticamente y enlazar la evidencia del hallazgo.
+
+8. Caso práctico: App Academia de Tango (gestión de alumnos y pagos)
+
+Contexto. Web API + Frontend. Objetivo: asegurar build y dependencias.
+
+Pipeline propuesto (etapas):
+
+Preparación: checkout, verificación de firma del commit, setup de versión fija de SDK.
+
+SCA + Secret Scan: escaneo de dependencias y búsqueda de secretos → bloquea si hay críticos.
+
+Build reproducible: compilar con flags seguros; generar SBOM del artefacto.
+
+Pruebas + cobertura: unitarias y de integración; cobertura ≥ 70% → bloquea si no cumple.
+
+SAST: análisis del código; cero críticos/altos → bloquea si no cumple.
+
+DAST (staging): escaneo dinámico de rutas sensibles (login, sesiones, validadores).
+
+Firma y publicación: firma del artefacto y publicación en registro interno.
+
+Entrega controlada: deployment solo si todas las etapas quedaron en verde.
+
+Políticas clave:
+
+Ramas protegidas, reviews obligatorias y status checks requeridos.
+
+Rotación de secretos y acceso de runner con permisos mínimos.
+
+Trazabilidad: guardar reportes SAST/SCA/DAST/SBOM por release.
+
+9. Respuestas a las preguntas orientadoras
+
+¿Por qué es importante automatizar el proceso de construcción y asegurar las herramientas?
+Porque reduce la variabilidad humana, genera evidencia reproducible, aplica controles de forma consistente y dificulta ataques a la cadena de suministro. Asegurar las herramientas (versiones fijas, runners endurecidos, firmas, secretos gestionados) cierra vectores de abuso del propio pipeline.
+
+¿Qué impacto tiene definir comprobaciones de seguridad obligatorias que bloqueen el build?
+Eleva el estándar de calidad: no salen artefactos inseguros. Los equipos corrigen antes, el riesgo operativo disminuye y se mejora la trazabilidad. “Romper” el build con criterios objetivos convierte la seguridad en una política técnica ejecutable, no solo en una recomendación.
+
+10. Checklist de verificación de código seguro (metacognición)
+
+ ¿El pipeline define umbral para SAST/SCA y bloquea hallazgos críticos/altos?
+
+ ¿Se genera SBOM en cada release y se almacena con la provenance?
+
+ ¿Las dependencias están fijadas y sin licencias incompatibles?
+
+ ¿Se escanean secretos en push/PR?
+
+ ¿Cobertura de pruebas ≥ 70% (o umbral acordado) y pruebas para módulos críticos?
+
+ ¿El runner y las credenciales siguen mínimo privilegio y rotación periódica?
+
+ ¿Se ejecuta DAST sobre staging para rutas sensibles?
+
+ ¿Quedó documentada la especificación de build con entradas, pasos, políticas y evidencia?
+
+11. Recomendaciones finales y errores comunes
+
+Recomendaciones.
+
+Alinear el plan con OWASP SAMM para priorizar y medir madurez.
+
+Empezar con controles de mayor impacto: SCA, secret scanning, SAST en PR, SBOM.
+
+Socializar métricas (tendencias de hallazgos, tiempos de remediación) con el equipo.
+
+Errores comunes.
+
+Tratar seguridad como paso final “después de compilar”.
+
+No fijar versiones ni revisar licencias.
+
+Permitir excepciones sin fecha de corrección ni justificación.
+
+12. Conclusiones
+
+Integrar seguridad en la compilación convierte las políticas en controles verificables. La automatización, los gates que bloquean y la gestión rigurosa de dependencias reducen el riesgo y elevan la calidad del software. Con el soporte de modelos de madurez como OWASP SAMM y prácticas de SAST/DAST, se logra un proceso trazable, repetible y realmente seguro.
+
+13. Referencias (formato APA 7)
+
+Ortega, J. (2018). Seguridad en aplicaciones Web Java (pp. 62–94). RA-MA Editorial.
+
+OWASP Foundation. (s. f.). OWASP Software Assurance Maturity Model (SAMM): Model overview. Recuperado de https://owaspsamm.org
+
+Conklin, L. (s. f.). Threat Modeling Process. OWASP. Recuperado de https://owasp.org/www-community/Threat_Modeling
+
+(Opcional complementaria) National Institute of Standards and Technology. (2022). Secure Software Development Framework (SSDF), SP 800-218.
+
+(Opcional complementaria) SLSA Framework. (2023). Supply-chain Levels for Software Artifacts. Recuperado de https://slsa.dev
